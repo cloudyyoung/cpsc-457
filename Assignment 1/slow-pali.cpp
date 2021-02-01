@@ -8,25 +8,28 @@
 // split string p_line into a vector of strings (words)
 // the delimiters are 1 or more whitespaces
 std::vector<std::string>
-split( const std::string & p_line)
+split(const std::string &p_line)
 {
-  auto line = p_line + " ";
-  std::vector<std::string> res;
-  bool in_str = false;
-  std::string curr_word = "";
-  for( auto c : line) {
-    if( isspace(c)) {
-      if( in_str)
-        res.push_back(curr_word);
-      in_str = false;
-      curr_word = "";
+    auto line = p_line + " ";
+    std::vector<std::string> res;
+    bool in_str = false;
+    std::string curr_word = "";
+    for (auto c : line)
+    {
+        if (isspace(c))
+        {
+            if (in_str)
+                res.push_back(curr_word);
+            in_str = false;
+            curr_word = "";
+        }
+        else
+        {
+            curr_word.push_back(c);
+            in_str = true;
+        }
     }
-    else {
-      curr_word.push_back(c);
-      in_str = true;
-    }
-  }
-  return res;
+    return res;
 }
 
 // global variable used in stdin_readline()
@@ -38,24 +41,25 @@ char buffer;
 std::string
 stdin_readline()
 {
-  std::string result;
-  while( 1 == read( STDIN_FILENO, & buffer, 1)) {
-    result.push_back(buffer);
-    if( buffer == '\n') break;
-  }
-  return result;
+    std::string result;
+    while (1 == read(STDIN_FILENO, &buffer, 1))
+    {
+        result.push_back(buffer);
+        if (buffer == '\n')
+            break;
+    }
+    return result;
 }
 
 // returns true if a word is palindrome
 // palindrome is a string that reads the same forward and backward
 //    after converting all characters to lower case
-bool
-is_palindrome( const std::string & s)
+bool is_palindrome(const std::string &s)
 {
-  for( size_t i = 0 ; i < s.size() / 2 ; i ++)
-    if( tolower(s[i]) != tolower(s[s.size()-i-1]))
-      return false;
-  return true;
+    for (size_t i = 0; i < s.size() / 2; i++)
+        if (tolower(s[i]) != tolower(s[s.size() - i - 1]))
+            return false;
+    return true;
 }
 
 // returns the longest palindrome on standard input
@@ -67,25 +71,27 @@ is_palindrome( const std::string & s)
 std::string
 get_longest_palindrome()
 {
-  std::string max_pali;
-  while(1) {
-    std::string line = stdin_readline();
-    if( line.size() == 0) break;
-    auto words = split( line);
-    for( auto word : words) {
-      if( word.size() <= max_pali.size()) continue;
-      if( is_palindrome(word))
-        max_pali = word;
+    std::string max_pali;
+    while (1)
+    {
+        std::string line = stdin_readline();
+        if (line.size() == 0)
+            break;
+        auto words = split(line);
+        for (auto word : words)
+        {
+            if (word.size() <= max_pali.size())
+                continue;
+            if (is_palindrome(word))
+                max_pali = word;
+        }
     }
-  }
-  return max_pali;
+    return max_pali;
 }
 
-int
-main()
+int main()
 {
-  std::string max_pali = get_longest_palindrome();
-  printf("Longest palindrome: %s\n", max_pali.c_str());
-  return 0;
+    std::string max_pali = get_longest_palindrome();
+    printf("Longest palindrome: %s\n", max_pali.c_str());
+    return 0;
 }
-
