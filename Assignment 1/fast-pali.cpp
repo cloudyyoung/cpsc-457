@@ -43,12 +43,13 @@ std::string
 stdin_read()
 {
     std::string result;
+    std::string tail;
 
     unsigned int size = read(STDIN_FILENO, buffer, sizeof(buffer));
     // printf("%d / %d\n", size, sizeof(buffer));
     result = std::string(buffer);
 
-    if (size == 0)
+    if (size <= 0)
         result = "";
 
     return result;
