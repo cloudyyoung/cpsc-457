@@ -43,14 +43,33 @@ std::string
 stdin_read()
 {
     std::string result;
-    std::string tail;
 
     unsigned int size = read(STDIN_FILENO, buffer, sizeof(buffer));
     // printf("%d / %d\n", size, sizeof(buffer));
-    result = std::string(buffer);
+    result.append(buffer);
 
+    // End of file, return empty string
     if (size <= 0)
-        result = "";
+        return "";
+
+    // If the string end is not a space
+    while (!isspace(result.back()))
+    {
+        // Read the next character from file (avoid cutting off words)
+        char buffer2;
+        unsigned int size2 = read(STDIN_FILENO, &buffer2, 1);
+
+        // The file has ended, then break and return
+        if (size2 <= 0)
+            break;
+
+        // Append next character to result string
+        result.push_back(buffer2);
+
+        // If buffer2 is a space, then break and return
+        if (isspace(buffer2))
+            break;
+    }
 
     return result;
 }
@@ -87,7 +106,10 @@ get_longest_palindrome()
             if (word.size() <= max_pali.size())
                 continue;
             if (is_palindrome(word))
+            {
+                // std::cout << word << "\n";
                 max_pali = word;
+            }
         }
     }
     return max_pali;
