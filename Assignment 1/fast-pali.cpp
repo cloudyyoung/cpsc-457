@@ -6,33 +6,6 @@
 #include <vector>
 #include <iostream>
 
-// split string p_line into a vector of strings (words)
-// the delimiters are 1 or more whitespaces
-std::vector<std::string>
-split(const std::string &p_line)
-{
-    auto line = p_line + " ";
-    std::vector<std::string> res;
-    bool in_str = false;
-    std::string curr_word = "";
-    for (auto c : line)
-    {
-        if (isspace(c))
-        {
-            if (in_str)
-                res.push_back(curr_word);
-            in_str = false;
-            curr_word = "";
-        }
-        else
-        {
-            curr_word.push_back(c);
-            in_str = true;
-        }
-    }
-    return res;
-}
-
 // global variable used in stdin_readline()
 char buffer[1024 * 1024 * 10];
 
@@ -94,21 +67,36 @@ bool is_palindrome(const std::string &s)
 std::string
 get_longest_palindrome()
 {
-    std::string max_pali;
+    std::string max_pali = "";
+
     while (1)
     {
-        std::string line = stdin_read();
-        if (line.size() == 0)
+        std::string block = stdin_read();
+        std::string word = "";
+
+        if (block.size() == 0)
             break;
-        auto words = split(line);
-        for (auto word : words)
+
+        for (auto c : block)
         {
-            if (word.size() <= max_pali.size())
-                continue;
-            if (is_palindrome(word))
+            if (isspace(c))
             {
-                // std::cout << word << "\n";
-                max_pali = word;
+                if (word.size() <= max_pali.size())
+                {
+                    word.clear();
+                    continue;
+                }
+
+                if (is_palindrome(word))
+                {
+                    max_pali = word;
+                }
+
+                word.clear();
+            }
+            else
+            {
+                word.push_back(c);
             }
         }
     }
