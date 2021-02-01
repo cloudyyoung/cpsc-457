@@ -1,0 +1,7 @@
+Hello,
+
+There are no palindromes here.
+
+Sincerely,
+
+The Author
