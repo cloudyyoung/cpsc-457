@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string>
-#include <vector>
 #include <iostream>
 
 // global variable used in stdin_readline()
