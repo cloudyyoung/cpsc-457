@@ -1,6 +1,8 @@
 # Assignment 1
 
-## Q1
+UCID: 30067857
+
+## Q1 - Written question
 
 ### a. Time the python code and C++ code on `t4.txt` and `t3.txt` using the `time` utility. Copy/paste the outputs from the terminal output to your report.
 
@@ -46,22 +48,22 @@ sys     0m0.003s
 
 ### b. How much time did the C++ and python programs spend in kernel vs user mode?
 
-Field `user` represents the time spend on user mode and `sys` for kernel mode. C++ program has close amount of time on both modes, and python program has most time on user mode.
+Field `user` represents the time spend on user mode and `sys` for kernel mode. C++ program has similar amount of time on both modes, and python program has most of the time on user mode.
 
 ### c. Why is the python program faster on some inputs when compared to C++ code? Why is the python program slower on other inputs?
 
 Compare the time spend on `t3.txt` and `t4.txt`, C++ program is faster for small text input, and Python program is faster on larger.  
-For `t4.txt`, Python is faster only because the input is huge and C++ made huge amount of `read` calls, namely one character per `read`, and Python read one line at a time. For `t3.txt`, C++ is faster because: a. Python has no advantage on `read` calls, the file is small, b. Python is an interpreted language, it compiles the code as run everytime; C++ program is pre-compiled, so it has better performance than Python.
+For `t4.txt`, Python is faster only because the input is huge and C++ made huge amount of `read` calls, namely one character per `read`. For `t3.txt`, C++ is faster because: a. Python has no advantage on `read` calls, the file is small, b. Python is an interpreted language, it compiles the script everytime it runs; C++ program is pre-compiled, it only compile once, so it has better performance than Python.
 
-## Q2
+## Q2 - Programming questio
 
 `fast-pali.cpp` is attached.
 
-## Q3
+## Q3 - Written question
 
 ### a. Is your `fast-pali.cpp` faster than `slow-pali.cpp`? Why do you think that is?
 
-Yes, it is faster. Because by having a larger buffer, `fast-pali` read a block of text at a time, and reduce the times invoking `read` function, there is not as much as waiting time by I/O and saves huge amount of time. It only made `13` calls of `read`, while `slow-pali` made `5597763` calls which is almost the length of the text as it only reads a single character per `read`. And the split word function is simplified, no vector is involved, no extra memory and fewer for loops.
+Yes, it is faster. Because by having a larger buffer, `fast-pali` reads a block of text at a time, and reduce the times invoking `read` function, there is not as much waiting time by I/O. `fast-pali` only made `13` calls of `read`, while `slow-pali` made `5597763` calls which is almost the length of the text, as it only reads a single character per `read`. And the split word function is simplified, no vector is involved, no extra memory and fewer for loops.
 
 ```
 $  strace -c ./slow-pali < t4.txt
@@ -111,7 +113,7 @@ Longest palindrome: redder
 
 ### b. Is your program faster or slower than `palindrome.py` and why?
 
-Yes, it is. Compare the calls of `read` field, `palindrome.py` reads one line at a time, and though it did not make that huge amount of `read` calls as `slow-pali`, it still made `767` calls, while `fast-pali.cpp` reads 10M of text which is way more than one line, the times invoking I/O is much fewer and less much time waiting. And because python is a relatively higher level language, as a trade off of simplier syntax, I assume it does more things than what we actually need; compare to `fast-pali`, there are `175` calls on `stat` which takes even more time than `read`, and other more operations like `sysinfo`.
+Yes, it is. Compare the calls of `read` field, `palindrome.py` reads one line at a time, and though it did not make that huge amount of `read` calls as `slow-pali`, it still made `767` calls, while `fast-pali.cpp` reads 10M of text which is way more than one line, the times invoking I/O is much fewer and less much time waiting. And because python is a interpreted language, as a trade off, it does more things than what we actually need: there are `175` calls on `stat` which takes even more time than `read`, and other more operations like `sysinfo`.
 
 ```
 $ strace -c python3 palindrome.py < t4.txt
