@@ -15,7 +15,6 @@
 // parallelize the function so that it uses n_threads threads to do
 // the computation.
 
-#include <pthread.h>
 #include <thread>
 #include <iostream>
 #include <cmath>
@@ -30,7 +29,7 @@ struct Task {
     double rsq;
 };
 Task tasks[256];
-pthread_t threads[256];
+std::thread threads[256];
 
 
 void count_pixels_thread(Task& task) {
@@ -83,14 +82,12 @@ uint64_t count_pixels(int r, int n_threads) {
         if (task.end_row > r) task.end_row = r;
 
         // Append to threads list
-        // threads[t] = std::thread(count_pixels_thread, std::ref(task));
-        pthread_create(&threads[t], NULL, count_pixels_thread, std::ref(task));
+        threads[t] = std::thread(count_pixels_thread, std::ref(task));
     }
 
     // Join threads and count
     for (int t = 0; t < n_threads; t++) {
-        // threads[t].join();
-        pthread_join(threads[t], NULL);
+        threads[t].join();
         count += tasks[t].count;
     }
 
