@@ -58,6 +58,7 @@ uint64_t count_pixels(int r, int n_threads) {
 
     // Initialize local variables
     int row_amount = r / n_threads;
+    int current_row = 0;
     uint64_t count = 0;
     double rsq = double(r) * r; // r^2
 
@@ -74,8 +75,9 @@ uint64_t count_pixels(int r, int n_threads) {
         // Set radius, start and end row; (start, end]
         task.r = r;
         task.rsq = rsq;
-        task.start_row = 0;
-        task.end_row = 1;
+        task.start_row = current_row;
+        task.end_row = current_row + row_amount;
+        current_row += row_amount;
 
         // If start or end row is greater than radius, set to radius
         if (task.start_row > r) task.start_row = r;
