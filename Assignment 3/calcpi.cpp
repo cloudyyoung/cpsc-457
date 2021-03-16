@@ -74,8 +74,8 @@ uint64_t count_pixels(int r, int n_threads) {
         // Set radius, start and end row; (start, end]
         task.r = r;
         task.rsq = rsq;
-        task.start_row = 0;
-        task.end_row = 1;
+        task.start_row = row_amount * t;
+        task.end_row = row_amount * (t + 1);
 
         // If start or end row is greater than radius, set to radius
         if (task.start_row > r) task.start_row = r;
