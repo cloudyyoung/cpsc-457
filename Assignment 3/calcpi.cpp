@@ -57,7 +57,7 @@ uint64_t count_pixels(int r, int n_threads) {
     }
 
     // Initialize local variables
-    int row_amount = r / n_threads;
+    int row_amount = std::ceil(double(r) / n_threads);
     uint64_t count = 0;
     double rsq = double(r) * r; // r^2
 
