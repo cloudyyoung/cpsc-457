@@ -25,12 +25,11 @@ struct Task {
     int end_row;
     int count;
     int r;
-    std::thread thread;
 };
 Task tasks[256];
 
 uint64_t count_pixels(int r, int n_threads) {
-    int row_amount = std::ceil(r * 2 / n_threads);
+    int row_amount = std::ceil(r / n_threads);
 
     uint64_t count = 0;
     // for (double x = 1; x <= r; x++)
@@ -38,16 +37,18 @@ uint64_t count_pixels(int r, int n_threads) {
     //         if (x * x + y * y <= rsq) count++;
 
     for (int t = 0; t < n_threads; t++) {
-        tasks[t].r = r;
-        tasks[t].start_row = row_amount * t;
-        tasks[t].end_row = row_amount * (t + 1) - 1;
+        Task task = tasks[t];
 
-        if (tasks[t].end_row > r * 2) {
-            tasks[t].end_row = r * 2;
+        task.r = r;
+        task.start_row = row_amount * t;
+        task.end_row = row_amount * (t + 1) - 1;
+
+        if (task.end_row > r) {
+            task.end_row = r;
         }
 
-        std::thread tasks[t].thread(count_pixels_thread, t);
-        tasks[t].thread.join();
+        std::thread t(count_pixels_thread, t);
+        t.join();
     }
 
     for (Task task : tasks) {
@@ -59,7 +60,7 @@ uint64_t count_pixels(int r, int n_threads) {
 
 void count_pixels_thread(int t) {
     Task task = tasks[t];
-    double rsq = double(task.r) * r; // r^2
+    double rsq = double(task.r) * task.r; // r^2
 
     for (double x = task.start_row; x <= task.end_row; x++) {
         for (double y = 0; y <= task.r; y++) {

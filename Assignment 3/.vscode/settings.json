@@ -5,7 +5,8 @@
         "*.wxss": "css",
         "*.wxs": "javascript",
         "*.jl": "json",
-        "thread": "cpp"
+        "thread": "cpp",
+        "chrono": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }
