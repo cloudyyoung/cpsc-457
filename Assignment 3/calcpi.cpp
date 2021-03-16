@@ -84,7 +84,7 @@ uint64_t count_pixels(int r, int n_threads) {
 
         // Append to threads list
         // threads[t] = std::thread(count_pixels_thread, std::ref(task));
-        pthread_create(&threads[t], NULL, count_pixels_thread, &task);
+        pthread_create(&threads[t], NULL, count_pixels_thread, std::ref(task));
     }
 
     // Join threads and count
