@@ -38,6 +38,7 @@ void count_pixels_thread(Task& task) {
     uint64_t count = 0;
     int start_row = task.start_row;
     int end_row = task.end_row;
+
     for (double x = start_row; x < end_row; x++) {
         for (double y = 1; y <= r; y++) {
             if (x * x + y * y <= rsq) {
@@ -45,6 +46,7 @@ void count_pixels_thread(Task& task) {
             }
         }
     }
+
     task.count = count;
 }
 
@@ -78,12 +80,15 @@ uint64_t count_pixels(int r, int n_threads) {
         // Set radius, start and end row; (start, end]
         ::r = r;
         ::rsq = rsq;
-        task.start_row = row_amount * t;
-        task.end_row = row_amount * (t + 1);
+        int start_row = row_amount * t;
+        int end_row = start_row + row_amount;
 
         // If start or end row is greater than radius, set to radius
-        if (task.start_row > r) task.start_row = r;
-        if (task.end_row > r) task.end_row = r;
+        if (start_row > r) start_row = r;
+        if (end_row > r) end_row = r;
+
+        task.start_row = start_row;
+        task.end_row = end_row;
 
         // Append to threads list
         threads[t] = std::thread(count_pixels_thread, std::ref(task));
