@@ -32,15 +32,42 @@ Swiching threads takes time for CPU, as there are more threads, each threads wil
 
 ## Q4 - Written question 
 
+### medium.txt
+
 | # Threads | Time Observed | Speed Up |
 |-----------|---------------|----------|
 | Original  | 45.8739s      | 1.0      |
 | 1         | 47.7243s      | 0.9612   |
-| 2         | 24.3292s      | 1.8855   |
+| 2         | 24.1226s      | 1.9016   |
 | 3         | 16.5678s      | 2.7688   |
-| 4         | 13.6956s      | 3.3495   |
-| 8         | 13.1108s      | 3.4989   |
-| 16        | 13.0690s      | 3.5105   |
+| 4         | 13.6624s      | 3.3576   |
+| 8         | 13.4199s      | 3.4183   |
+| 16        | 13.2798s      | 3.4544   |
+
+### hard.txt
+
+| # Threads | Time Observed | Speed Up |
+|-----------|---------------|----------|
+| Original  | 16.8609s      | 1.0      |
+| 1         | 16.2153s      | 1.0398   |
+| 2         |  8.1577s      | 2.0668   |
+| 3         |  6.1967s      | 2.7209   |
+| 4         |  5.5532s      | 3.0362   |
+| 8         |  5.0013s      | 3.3713   |
+| 16        |  4.9009s      | 3.4403   |
+
+### hard2.txt
+
+| # Threads | Time Observed | Speed Up |
+|-----------|---------------|----------|
+| Original  | 15.5519s      | 1.0      |
+| 1         | 16.2319s      | 0.9581   |
+| 2         |  8.1986s      | 1.8968   |
+| 3         |  5.7084s      | 2.7243   |
+| 4         |  4.6876s      | 3.3176   |
+| 8         |  4.4668s      | 3.4816   |
+| 16        |  3.9674s      | 3.9199   |
+
 
 ### Are the timings what you expected them to be? If not, explain why they differ.
 
