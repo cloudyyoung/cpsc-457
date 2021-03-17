@@ -30,102 +30,99 @@ int64_t upper;
 int64_t part;
 unordered_map<int64_t, bool> cache;
 
+void skip_threading(bool is) {
+    if (is_threading) {
+        is_threading = false;
+        is_prime.store(is, memory_order_release);
+    }
+}
 
 void* is_prime_thread(void* id) {
 
     int thread_id = long(id);
 
-    auto skip_threading = [](bool is) {
-        if (is_threading) {
-            is_threading = false;
-            is_prime.store(is, memory_order_release);
-            goto serial2;
+    while (true) {
+        // Serial #1
+        // Update global variables after retrive next number to detect
+        int ret1 = pthread_barrier_wait(&barrier);
+        if (ret1 == PTHREAD_BARRIER_SERIAL_THREAD) {
+            // Get processing number
+            if (num_index >= (int)nums.size()) {
+                finished = true;
+            } else {
+                n = nums[num_index];
+                is_threading = true;
+                is_prime.store(true, memory_order_release);
+
+                // Handle trivial cases
+                if (n < 2) skip_threading(false);
+                if (n <= 3) skip_threading(true); // 2 and 3 are primes
+                if (n % 2 == 0) skip_threading(false); // handle multiples of 2
+                if (n % 3 == 0) skip_threading(false); // handle multiples of 3
+
+                // Find if result already has current number
+                auto search = cache.find(n);
+                if (search != cache.end()) {
+                    cout << "find cache" << endl;
+                    skip_threading(cache[n]);
+                }
+
+                // Try to divide n by every number 5 .. sqrt(n)
+                lower = 5;
+                upper = sqrt(n);
+                part = ceil(double(upper - lower) / n_threads);
+
+                // Pad part to 6
+                part = (part > 6) ? part - (part % 6) + 6 : 6;
+
+                // Other cases
+                if (upper < lower) skip_threading(true); // Prime, but small numbers, like 13, 17, 19
+                if (upper == lower) skip_threading(false); // It's 25, not prime
+                if (n % upper == 0 || n % (upper + 2) == 0) skip_threading(false); // Upper bound is the divisor
+
+                num_index++;
+            }
+        }
+
+        // Parallel
+        // Threads work on their own workloads
+        pthread_barrier_wait(&barrier);
+        if (finished) {
+            break;
+        } else if (is_threading) {
+            // Calculate draft start and end
+            int64_t start = lower + part * thread_id;
+            int64_t end = start + part;
+
+            // Limit range
+            if (start > upper) start = upper;
+            if (start < lower) start = lower;
+            if (end > upper) end = upper;
+
+
+            // Loop checking prime
+            for (int64_t t = start; t <= end; t += 6) {
+                if (!is_prime.load()) {
+                    break;
+                }
+                if (n % t == 0 || n % (t + 2) == 0) {
+                    is_prime.store(false, memory_order_release);
+                    break;
+                }
+            }
+        }
+
+        // Serial #2
+        int ret2 = pthread_barrier_wait(&barrier);
+        if (ret2 == PTHREAD_BARRIER_SERIAL_THREAD) {
+            bool is_prime = ::is_prime.load();
+            if (is_prime) {
+                result.push_back(n);
+            }
+
+            cache.insert({ n, is_prime });
         }
     }
-
-        while (true) {
-            // Serial #1
-            // Update global variables after retrive next number to detect
-            int ret1 = pthread_barrier_wait(&barrier);
-            if (ret1 == PTHREAD_BARRIER_SERIAL_THREAD) {
-                // Get processing number
-                if (num_index >= (int)nums.size()) {
-                    finished = true;
-                } else {
-                    n = nums[num_index];
-                    is_threading = true;
-                    is_prime.store(true, memory_order_release);
-
-                    // Handle trivial cases
-                    if (n < 2) skip_threading(false);
-                    if (n <= 3) skip_threading(true); // 2 and 3 are primes
-                    if (n % 2 == 0) skip_threading(false); // handle multiples of 2
-                    if (n % 3 == 0) skip_threading(false); // handle multiples of 3
-
-                    // Find if result already has current number
-                    auto search = cache.find(n);
-                    if (search != cache.end()) {
-                        cout << "find cache" << endl;
-                        skip_threading(cache[n]);
-                    }
-
-                    // Try to divide n by every number 5 .. sqrt(n)
-                    lower = 5;
-                    upper = sqrt(n);
-                    part = ceil(double(upper - lower) / n_threads);
-
-                    // Pad part to 6
-                    part = (part > 6) ? part - (part % 6) + 6 : 6;
-
-                    // Other cases
-                    if (upper < lower) skip_threading(true); // Prime, but small numbers, like 13, 17, 19
-                    if (upper == lower) skip_threading(false); // It's 25, not prime
-                    if (n % upper == 0 || n % (upper + 2) == 0) skip_threading(false); // Upper bound is the divisor
-
-                    num_index++;
-                }
-            }
-
-            // Parallel
-            // Threads work on their own workloads
-            pthread_barrier_wait(&barrier);
-            if (finished) {
-                break;
-            } else if (is_threading) {
-                // Calculate draft start and end
-                int64_t start = lower + part * thread_id;
-                int64_t end = start + part;
-
-                // Limit range
-                if (start > upper) start = upper;
-                if (start < lower) start = lower;
-                if (end > upper) end = upper;
-
-
-                // Loop checking prime
-                for (int64_t t = start; t <= end; t += 6) {
-                    if (!is_prime.load()) {
-                        break;
-                    }
-                    if (n % t == 0 || n % (t + 2) == 0) {
-                        is_prime.store(false, memory_order_release);
-                        break;
-                    }
-                }
-            }
-
-        serial2:
-            // Serial #2
-            int ret2 = pthread_barrier_wait(&barrier);
-            if (ret2 == PTHREAD_BARRIER_SERIAL_THREAD) {
-                bool is_prime = ::is_prime.load();
-                if (is_prime) {
-                    result.push_back(n);
-                }
-
-                cache.insert({ n, is_prime });
-            }
-        }
 
     pthread_exit(0);
 }
