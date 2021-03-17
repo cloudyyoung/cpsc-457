@@ -30,6 +30,25 @@ int64_t upper;
 int64_t part;
 unordered_map<int64_t, bool> cache;
 
+static bool is_prime_serial(int64_t n)
+{
+    // handle trivial cases
+    if (n < 2) return false;
+    if (n <= 3) return true; // 2 and 3 are primes
+    if (n % 2 == 0) return false; // handle multiples of 2
+    if (n % 3 == 0) return false; // handle multiples of 3
+    // try to divide n by every number 5 .. sqrt(n)
+    int64_t i = 5;
+    int64_t max = sqrt(n);
+    while (i <= max) {
+        if (n % i == 0) return false;
+        if (n % (i + 2) == 0) return false;
+        i += 6;
+    }
+    // didn't find any divisors, so it must be a prime
+    return true;
+}
+
 void skip_threading(bool is) {
     if (is_threading) {
         is_threading = false;
@@ -66,7 +85,6 @@ void* is_prime_thread(void* id) {
                 if (is_threading) {
                     auto search = cache.find(n);
                     if (search != cache.end()) {
-                        cout << "find cache" << endl;
                         skip_threading(cache[n]);
                     }
                 }
@@ -76,7 +94,16 @@ void* is_prime_thread(void* id) {
                     lower = 5;
                     upper = sqrt(n);
                     part = ceil(double(upper - lower) / n_threads);
-                    part = (part > 6) ? part - (part % 6) + 6 : 6; // Pad part to 6
+
+                    if (part > 6) {
+                        // Pad part to 6
+                        part = part - (part % 6) + 6;
+                    } else if (part <= 6) {
+                        // Too small for each thread, each thread will only loop once or even less,
+                        // so use classic method
+                        bool is_prime = is_prime_serial(n);
+                        skip_threading(is_prime);
+                    }
                 }
 
                 // Other cases
@@ -126,7 +153,7 @@ void* is_prime_thread(void* id) {
                 result.push_back(n);
             }
 
-            cache.insert({ n, is_prime });
+            cache[n] = is_prime;
         }
     }
 
@@ -145,28 +172,34 @@ void* is_prime_thread(void* id) {
 std::vector<int64_t>
 detect_primes(const std::vector<int64_t>& nums, int n_threads)
 {
-    // Initialzie global variables
-    ::nums = nums;
-    ::n_threads = n_threads;
-    finished = false;
-    num_index = 0;
+    if (n_threads == 1) { // Classic method
+        for (auto num : nums) {
+            if (is_prime_serial(num)) result.push_back(num);
+        }
+    } else { // Multi-thread method
+        // Initialzie global variables
+        ::nums = nums;
+        ::n_threads = n_threads;
+        finished = false;
+        num_index = 0;
 
-    // Initialize barrier and threads list
-    pthread_barrier_init(&barrier, NULL, n_threads);
-    pthread_t threads[n_threads];
+        // Initialize barrier and threads list
+        pthread_barrier_init(&barrier, NULL, n_threads);
+        pthread_t threads[n_threads];
 
-    // Start threads
-    for (int t = 0; t < n_threads; t++) {
-        pthread_create(&threads[t], NULL, is_prime_thread, (void*)(long)t);
+        // Start threads
+        for (int t = 0; t < n_threads; t++) {
+            pthread_create(&threads[t], NULL, is_prime_thread, (void*)(long)t);
+        }
+
+        // Join threads
+        for (int t = 0; t < n_threads; t++) {
+            pthread_join(threads[t], NULL);
+        }
+
+        // Destroy barrier
+        pthread_barrier_destroy(&barrier);
     }
-
-    // Join threads
-    for (int t = 0; t < n_threads; t++) {
-        pthread_join(threads[t], NULL);
-    }
-
-    // Destroy barrier
-    pthread_barrier_destroy(&barrier);
 
     return result;
 }
