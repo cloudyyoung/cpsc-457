@@ -8,19 +8,19 @@
 
 | Threads      | Timings (s) |
 |--------------|-------------|
-| 1 (Original) | 4.275       |
-| 1            | 4.802       |
-| 2            | 2.522       |
-| 3            | 1.879       |
-| 4            | 1.793       |
-| 6            | 1.587       |
-| 8            | 1.385       |
-| 12           | 1.598       |
-| 16           | 1.502       |
-| 24           | 1.388       |
-| 32           | 1.475       |
+| 1 (Original) | 3.153       |
+| 1            | 3.153       |
+| 2            | 1.581       |
+| 3            | 1.083       |
+| 4            | 0.841       |
+| 6            | 0.778       |
+| 8            | 0.664       |
+| 12           | 0.691       |
+| 16           | 0.676       |
+| 24           | 0.676       |
+| 32           | 0.674       |
 
-![q2-chart.png](https://media.discordapp.net/attachments/821581662839767081/821581718410362940/q2-chart.png?width=688&height=413)
+![q2-chart.png](https://media.discordapp.net/attachments/821581662839767081/821711436160958474/unknown.png?width=688&height=413)
 
 ### B. When you run your implementation with N threads, you should see N-times speed up compared to the original single threaded program. Do you observe this in your timings for all values of N?
 
