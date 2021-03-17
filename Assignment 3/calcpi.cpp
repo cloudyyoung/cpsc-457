@@ -38,6 +38,8 @@ void count_pixels_thread(Task& task) {
     uint64_t count = 0;
     int start_row = task.start_row;
     int end_row = task.end_row;
+    int r = ::r;
+    double rsq = ::rsq;
 
     for (double x = start_row; x < end_row; x++) {
         for (double y = 1; y <= r; y++) {
