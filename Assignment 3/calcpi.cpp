@@ -97,3 +97,4 @@ uint64_t count_pixels(int r, int n_threads) {
 // ./calcpi 10 2
 // ./calcpi 2 2
 // ./calcpi 100000 16
+// ./calcpi 50000 16
