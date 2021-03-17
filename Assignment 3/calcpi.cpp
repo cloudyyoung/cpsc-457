@@ -75,8 +75,6 @@ uint64_t count_pixels(int r, int n_threads) {
 
     // Launch threads and assign tasks
     for (int t = 0; t < n_threads; t++) {
-        Task& task = tasks[t];
-
         // Set radius, start and end row; (start, end]
         ::r = r;
         ::rsq = rsq;
@@ -87,6 +85,8 @@ uint64_t count_pixels(int r, int n_threads) {
         if (start_row > r) start_row = r;
         if (end_row > r) end_row = r;
 
+        // Set to struct
+        Task& task = tasks[t];
         task.start_row = start_row;
         task.end_row = end_row;
 
