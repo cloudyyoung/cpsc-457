@@ -25,20 +25,22 @@ struct Task {
     int start_row;
     int end_row;
     uint64_t count;
-    int r;
-    double rsq;
 };
 Task tasks[256];
 std::thread threads[256];
+int r;
+double rsq;
 
 
 void count_pixels_thread(Task& task) {
     // Counting
     // Here we only calculate 1/4 of the circle, the right bottom corner
-    int count = 0;
-    for (double x = task.start_row; x < task.end_row; x++) {
-        for (double y = 1; y <= task.r; y++) {
-            if (x * x + y * y <= task.rsq) {
+    uint64_t count = 0;
+    int start_row = task.start_row;
+    int end_row = task.end_row;
+    for (double x = start_row; x < end_row; x++) {
+        for (double y = 1; y <= r; y++) {
+            if (x * x + y * y <= rsq) {
                 count++;
             }
         }
@@ -74,8 +76,8 @@ uint64_t count_pixels(int r, int n_threads) {
         Task& task = tasks[t];
 
         // Set radius, start and end row; (start, end]
-        task.r = r;
-        task.rsq = rsq;
+        ::r = r;
+        ::rsq = rsq;
         task.start_row = row_amount * t;
         task.end_row = row_amount * (t + 1);
 
