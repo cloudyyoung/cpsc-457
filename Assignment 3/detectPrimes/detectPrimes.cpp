@@ -55,30 +55,36 @@ void* is_prime_thread(void* id) {
                 is_prime.store(true, memory_order_release);
 
                 // Handle trivial cases
-                if (n < 2) skip_threading(false);
-                if (n <= 3) skip_threading(true); // 2 and 3 are primes
-                if (n % 2 == 0) skip_threading(false); // handle multiples of 2
-                if (n % 3 == 0) skip_threading(false); // handle multiples of 3
+                if (is_threading) {
+                    if (n < 2) skip_threading(false);
+                    if (n <= 3) skip_threading(true); // 2 and 3 are primes
+                    if (n % 2 == 0) skip_threading(false); // handle multiples of 2
+                    if (n % 3 == 0) skip_threading(false); // handle multiples of 3
+                }
 
                 // Find if result already has current number
-                auto search = cache.find(n);
-                if (search != cache.end()) {
-                    cout << "find cache" << endl;
-                    skip_threading(cache[n]);
+                if (is_threading) {
+                    auto search = cache.find(n);
+                    if (search != cache.end()) {
+                        cout << "find cache" << endl;
+                        skip_threading(cache[n]);
+                    }
                 }
 
                 // Try to divide n by every number 5 .. sqrt(n)
-                lower = 5;
-                upper = sqrt(n);
-                part = ceil(double(upper - lower) / n_threads);
-
-                // Pad part to 6
-                part = (part > 6) ? part - (part % 6) + 6 : 6;
+                if (is_threading) {
+                    lower = 5;
+                    upper = sqrt(n);
+                    part = ceil(double(upper - lower) / n_threads);
+                    part = (part > 6) ? part - (part % 6) + 6 : 6; // Pad part to 6
+                }
 
                 // Other cases
-                if (upper < lower) skip_threading(true); // Prime, but small numbers, like 13, 17, 19
-                if (upper == lower) skip_threading(false); // It's 25, not prime
-                if (n % upper == 0 || n % (upper + 2) == 0) skip_threading(false); // Upper bound is the divisor
+                if (is_threading) {
+                    if (upper < lower) skip_threading(true); // Prime, but small numbers, like 13, 17, 19
+                    if (upper == lower) skip_threading(false); // It's 25, not prime
+                    if (n % upper == 0 || n % (upper + 2) == 0) skip_threading(false); // Upper bound is the divisor
+                }
 
                 num_index++;
             }
