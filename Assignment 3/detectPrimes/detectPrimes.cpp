@@ -34,7 +34,6 @@ void skip_threading(bool is) {
     if (is_threading) {
         is_threading = false;
         is_prime.store(is, memory_order_release);
-        goto parallel;
     }
 }
 
@@ -87,7 +86,6 @@ void* is_prime_thread(void* id) {
 
         // Parallel
         // Threads work on their own workloads
-    parallel:
         pthread_barrier_wait(&barrier);
         if (finished) {
             break;
