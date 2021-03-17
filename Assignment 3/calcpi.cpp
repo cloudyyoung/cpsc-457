@@ -35,15 +35,13 @@ std::thread threads[256];
 void count_pixels_thread(Task& task) {
     // Counting
     // Here we only calculate 1/4 of the circle, the right bottom corner
-    int count = 0;
     for (double x = task.start_row; x < task.end_row; x++) {
         for (double y = 1; y <= task.r; y++) {
             if (x * x + y * y <= task.rsq) {
-                count++;
+                task.count++;
             }
         }
     }
-    task.count = count;
 }
 
 uint64_t count_pixels(int r, int n_threads) {
