@@ -117,7 +117,7 @@ void* is_prime_thread(void* id) {
         // Serial #2
         int ret2 = pthread_barrier_wait(&barrier);
         if (ret2 == PTHREAD_BARRIER_SERIAL_THREAD) {
-            bool is_prime = is_prime.load();
+            bool is_prime = ::is_prime.load();
             if (is_prime) {
                 result.push_back(n);
             }
