@@ -54,18 +54,18 @@ void* is_prime_thread(void* id) {
                 is_threading = true;
                 is_prime.store(true, memory_order_release);
 
+                // Handle trivial cases
+                if (n < 2) skip_threading(false);
+                if (n <= 3) skip_threading(true); // 2 and 3 are primes
+                if (n % 2 == 0) skip_threading(false); // handle multiples of 2
+                if (n % 3 == 0) skip_threading(false); // handle multiples of 3
+
                 // Find if result already has current number
                 auto search = cache.find(n);
                 if (search != cache.end()) {
                     cout << "find cache" << endl;
                     skip_threading(cache[n]);
                 }
-
-                // Handle trivial cases
-                if (n < 2) skip_threading(false);
-                if (n <= 3) skip_threading(true); // 2 and 3 are primes
-                if (n % 2 == 0) skip_threading(false); // handle multiples of 2
-                if (n % 3 == 0) skip_threading(false); // handle multiples of 3
 
                 // Try to divide n by every number 5 .. sqrt(n)
                 lower = 5;
@@ -115,11 +115,12 @@ void* is_prime_thread(void* id) {
         // Serial #2
         int ret2 = pthread_barrier_wait(&barrier);
         if (ret2 == PTHREAD_BARRIER_SERIAL_THREAD) {
-            if (is_prime.load()) {
+            bool is_prime = is_prime.load();
+            if (is_prime) {
                 result.push_back(n);
             }
 
-            cache.insert({ n, is_prime.load() });
+            cache.insert({ n, is_prime });
         }
     }
 
