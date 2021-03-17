@@ -71,4 +71,5 @@ Swiching threads takes time for CPU, as there are more threads, each threads wil
 
 ### Are the timings what you expected them to be? If not, explain why they differ.
 
-The timing is not as expected, the speeding-up gets levelling off. As mentioned before, there are more threads than actually needed, there is a balance between thread amount and workload, only falling into the balance will get the optimized time.
+The timing is different from expected, the speeding-up gets levelling off. As mentioned before, there are more threads than actually needed, each threads get too few workloads and CPU is taking time frequently switching between them. 
+There is a balance between thread amount and workload, only falling into the balance will get the optimized time. According to the table, this balance is around 4-threads.
