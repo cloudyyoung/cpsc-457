@@ -1,0 +1,6 @@
+    2      <-   fork1
+  plato    ->   fork1   
+  plato    ->     2    
+ socrates  ->   fork1
+ socrates  <-     2
+ 

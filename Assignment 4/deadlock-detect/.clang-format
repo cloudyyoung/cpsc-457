@@ -1,0 +1,9 @@
+BasedOnStyle: WebKit
+AlignAfterOpenBracket: AlwaysBreak
+AllowAllParametersOfDeclarationOnNextLine: true
+ColumnLimit: 80
+PointerAlignment: Middle
+BinPackParameters: false
+BinPackArguments: false
+AlwaysBreakTemplateDeclarations: Yes
+SpaceBeforeAssignmentOperators: true
