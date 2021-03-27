@@ -5,14 +5,50 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
 class FastGraph {
 public:
     std::vector<std::vector<int>> adjacency;
     std::vector<int> outs;
 } graph;
 
+class NodesDictionary {
+    int counter = 0;
+    std::unordered_map<int, std::string> dict1;
+    std::unordered_map<std::string, int> dict2;
+
+public:
+    int get(const std::string& w) {
+        auto f = dict2.find(w);
+
+        if (f == dict2.end()) {
+            // New string
+            dict1[counter] = w;
+            dict2[w] = counter;
+            counter++;
+            return counter - 1;
+        } else {
+            // Known string
+            return dict2[w];
+        }
+    }
+
+    std::string get(int t) {
+        if (t < 0 || t > dict1.size()) {
+            return "";
+        }
+        return dict1[t];
+    }
+
+    int size() {
+        return counter;
+    }
+
+} dictionary;
+
 const std::string REQUEST = "->";
 const std::string ASSIGN = "<-";
+
 
 /// this is the function you need to (re)implement
 ///
@@ -34,63 +70,83 @@ const std::string ASSIGN = "<-";
 Result detect_deadlock(const std::vector<std::string>& edges)
 {
 
-    Word2Int w2i;
+    Result result;
 
-    // Populate fraph
-    for (auto& edge : edges) {
+    // Handle edges
+    for (int t = 0; t < edges.size(); t++) {
+        std::string edge = edges[t];
         std::vector<std::string> tokens = split(edge);
-        int t1 = w2i.get(tokens[0]);
-        int t2 = w2i.get(tokens[2]);
+        int t1 = dictionary.get("[P]" + tokens[0]); // [P]a, use prefix to differentiate process / resource
+        int t2 = dictionary.get("[R]" + tokens[2]); // [R]a
+        int from, to;
         std::string sign = tokens[1];
 
         if (sign == REQUEST) {
             // t1 -> t2
-            graph.adjacency[t2].push_back(t1);
-            graph.outs[t1] ++;
+            from = t1;
+            to = t2;
         } else if (sign == ASSIGN) {
             // t1 <- t2
-            graph.adjacency[t1].push_back(t2);
-            graph.outs[t2] ++;
+            from = t2;
+            to = t1;
+        } else {
+            // Invalid input
+            continue;
         }
-    }
 
-    std::vector<int> outs = graph.outs;
-    std::vector<int> zeros;
+        // Sizing to number of nodes
+        int size = dictionary.size();
+        graph.outs.resize(size);
+        graph.adjacency.resize(size);
 
-    // All nodes with 0 outdegree
-    for (int t = 0; t < graph.outs.size(); t++) {
-        if (graph.outs[t] == 0) {
-            zeros.push_back(t);
-        }
-    }
+        // Record out and incoming
+        graph.adjacency[to].push_back(from);
+        graph.outs[from] ++;
 
-    // Remove nodes with 0 outdegree from their adjacency
-    while (!zeros.empty()) {
-        int node = zeros.pop_back();
-        for (int adj : graph.adjacency[node]) {
-            outs[adj]--;
-
-            if (outs[adj] == 0) {
-                // If adjacency has 0 outdegree
-                zeros.push_back(adj);
+        // All nodes with 0 outdegree
+        std::vector<int> outs = graph.outs;
+        std::vector<int> zeros;
+        for (int t = 0; t < graph.outs.size(); t++) {
+            if (graph.outs[t] == 0) {
+                zeros.push_back(t);
             }
         }
-    }
 
+        // Remove nodes with 0 outdegree from their adjacency
+        while (!zeros.empty()) {
+            int node = zeros.back();
+            zeros.pop_back();
+            for (int adj : graph.adjacency[node]) {
+                outs[adj]--;
 
-    Result result;
-    result.edge_index = -1;
-
-    // Find cycle
-    for (int t = 0; t < outs.size(); t++) {
-        if (outs[t] == 0) {
-            std::string node = edges[t];
-            result.cycle.push_back(node);
-
-            if (result.edge_index == -1) {
-                result.edge_index = t;
+                if (outs[adj] == 0) {
+                    zeros.push_back(adj);
+                }
             }
         }
+
+        // Find cycle
+        for (int t = 0; t < outs.size(); t++) {
+            if (outs[t] != 0) {
+                std::string node = dictionary.get(t);
+                if (node.find("[P]") != std::string::npos) {
+                    // Only if it's a process and it has outs
+                    node.replace(0, 3, "");
+                    result.cycle.push_back(node);
+                }
+            }
+        }
+
+        // If there's cycle
+        if (!result.cycle.empty()) {
+            result.edge_index = t;
+            break;
+        }
+    }
+
+    // If no cycle
+    if (result.cycle.empty()) {
+        result.edge_index = -1;
     }
 
 
