@@ -1,12 +1,18 @@
-// this is the ONLY file you should edit and submit to D2L
 
 #include "deadlock_detector.h"
 #include "common.h"
 
+#include <iostream>
+#include <vector>
+#include <string>
 class FastGraph {
-    std::vector<std::vector<int>> adj_list;
-    std::vector<int> out_counts;
+public:
+    std::vector<std::vector<int>> adjacency;
+    std::vector<int> outs;
 } graph;
+
+const std::string REQUEST = "->";
+const std::string ASSIGN = "<-";
 
 /// this is the function you need to (re)implement
 ///
@@ -23,13 +29,70 @@ class FastGraph {
 /// to contain with names of processes that are in the deadlock.
 ///
 /// To indicate no deadlock was detected after processing all edges, you must
-/// return Result with edge_index = -1 and empy cycle[].
+/// return Result with edge_index = -1 and empty cycle[].
 ///
 Result detect_deadlock(const std::vector<std::string>& edges)
 {
-    Result result;
 
-    
+    Word2Int w2i;
+
+    // Populate fraph
+    for (auto& edge : edges) {
+        std::vector<std::string> tokens = split(edge);
+        int t1 = w2i.get(tokens[0]);
+        int t2 = w2i.get(tokens[2]);
+        std::string sign = tokens[1];
+
+        if (sign == REQUEST) {
+            // t1 -> t2
+            graph.adjacency[t2].push_back(t1);
+            graph.outs[t1] ++;
+        } else if (sign == ASSIGN) {
+            // t1 <- t2
+            graph.adjacency[t1].push_back(t2);
+            graph.outs[t2] ++;
+        }
+    }
+
+    std::vector<int> outs = graph.outs;
+    std::vector<int> zeros;
+
+    // All nodes with 0 outdegree
+    for (int t = 0; t < graph.outs.size(); t++) {
+        if (graph.outs[t] == 0) {
+            zeros.push_back(t);
+        }
+    }
+
+    // Remove nodes with 0 outdegree from their adjacency
+    while (!zeros.empty()) {
+        int node = zeros.pop_back();
+        for (int adj : graph.adjacency[node]) {
+            outs[adj]--;
+
+            if (outs[adj] == 0) {
+                // If adjacency has 0 outdegree
+                zeros.push_back(adj);
+            }
+        }
+    }
+
+
+    Result result;
+    result.edge_index = -1;
+
+    // Find cycle
+    for (int t = 0; t < outs.size(); t++) {
+        if (outs[t] == 0) {
+            std::string node = edges[t];
+            result.cycle.push_back(node);
+
+            if (result.edge_index == -1) {
+                result.edge_index = t;
+            }
+        }
+    }
+
 
     return result;
 }
