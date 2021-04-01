@@ -71,6 +71,7 @@ Result detect_deadlock(const std::vector<std::string>& edges)
 {
 
     Result result;
+    size_t graph_size = 0;
 
     // Handle edges
     for (int t = 0; t < edges.size(); t++) {
@@ -95,10 +96,13 @@ Result detect_deadlock(const std::vector<std::string>& edges)
         }
 
         // Sizing to number of nodes
-        // TODO: Resize 2x
         int size = dictionary.size();
-        graph.outs.resize(size);
-        graph.adjacency.resize(size);
+        if (graph_size < size) {
+            graph_size *= 2;
+            graph.outs.resize(graph_size);
+            graph.adjacency.resize(graph_size);
+        }
+
 
         // Record out and incoming
         graph.adjacency[to].push_back(from);
