@@ -8,34 +8,6 @@
 #include <algorithm>
 #include <climits>
 
-void print(std::queue<int> q, std::string name)
-{
-    std::cout << name << ":  [";
-    while (!q.empty()) {
-        std::cout << q.front() << ",";
-        q.pop();
-    }
-    std::cout << "]" << std::endl;
-}
-
-void print(std::vector<int64_t> q, std::string name)
-{
-    std::cout << name << ": [";
-    for (int64_t each : q) {
-        std::cout << each << ", ";
-    }
-    std::cout << "]" << std::endl;
-}
-
-
-void print(std::vector<int> q, std::string name)
-{
-    std::cout << name << ": [";
-    for (int64_t each : q) {
-        std::cout << each << ", ";
-    }
-    std::cout << "]" << std::endl;
-}
 
 // this is the function you should edit
 //
