@@ -11,7 +11,6 @@
 void print(std::queue<int> q, std::string name)
 {
     std::cout << name << ":  [";
-    //printing content of queue 
     while (!q.empty()) {
         std::cout << q.front() << ",";
         q.pop();
@@ -22,7 +21,6 @@ void print(std::queue<int> q, std::string name)
 void print(std::vector<int64_t> q, std::string name)
 {
     std::cout << name << ": [";
-    //printing content of queue 
     for (int64_t each : q) {
         std::cout << each << ", ";
     }
@@ -33,7 +31,6 @@ void print(std::vector<int64_t> q, std::string name)
 void print(std::vector<int> q, std::string name)
 {
     std::cout << name << ": [";
-    //printing content of queue 
     for (int64_t each : q) {
         std::cout << each << ", ";
     }
@@ -87,14 +84,14 @@ void simulate_rr(
             burst[lining] = processes[lining].burst;
             start[lining] = false;
             finish[lining] = false;
-            std::cout << "  - queue new process " << lining << ", arrival " << processes[lining].arrival_time << std::endl;
+            // std::cout << "  - queue new process " << lining << ", arrival " << processes[lining].arrival_time << std::endl;
             lining++;
         }
 
-        std::cout << "time:   " << time << std::endl;
-        print(queue, "queue");
-        print(burst, "burst");
-        std::cout << "lining: " << lining << "/" << processes.size() << std::endl;
+        // std::cout << "time:   " << time << std::endl;
+        // print(queue, "queue");
+        // print(burst, "burst");
+        // std::cout << "lining: " << lining << "/" << processes.size() << std::endl;
 
         burst_jump = false;
 
@@ -104,9 +101,9 @@ void simulate_rr(
             int queue_size = int(queue.size());
             queue.pop();
             if (seq.back() != current || seq.empty()) {
-                std::cout << "  - seq back " << seq.back() << ", current: " << current << std::endl;
+                // std::cout << "  - seq back " << seq.back() << ", current: " << current << std::endl;
                 seq.push_back(current);
-                print(seq, "seq");
+                // print(seq, "seq");
             }
 
             // Process start
@@ -120,24 +117,24 @@ void simulate_rr(
                 time += burst[current];
                 burst[current] = 0;
 
-                std::cout << "  - last process jump " << std::endl;
+                // std::cout << "  - last process jump " << std::endl;
             } else if (queue_size == 1 && time + burst[current] <= processes[lining].arrival_time) {
                 // Current alone, finishes before/at next process arrives
                 processes[current].finish_time = time + burst[current];
                 finish[current] = true;
                 burst[current] = 0;
 
-                std::cout << "  - single process finish jump" << std::endl;
+                // std::cout << "  - single process finish jump" << std::endl;
             } else if (queue_size == 1 && quantum <= processes[lining].arrival_time - time) {
                 // Currect alone, half jump to next process arrives
                 int64_t jump = ((processes[lining].arrival_time - time) / quantum + 1) * quantum;
                 burst[current] -= jump;
                 time += jump;
 
-                std::cout << "  - single process half jump" << std::endl;
+                // std::cout << "  - single process half jump" << std::endl;
             } else {
                 //  Burst jump or Regular one-quantum step
-                std::cout << "current: " << current << std::endl;
+                // std::cout << "current: " << current << std::endl;
 
                 // Copy queue to vector for later
                 std::queue<int> _queue = queue;
@@ -147,14 +144,14 @@ void simulate_rr(
                     queue_v.push_back(_queue.front());
                     _queue.pop();
                 }
-                print(queue_v, "queue_v");
+                // print(queue_v, "queue_v");
 
                 // Get jump steps, find minimum process burst in queue
                 int64_t min = LLONG_MAX;
                 for (int b : queue_v) {
                     if (burst[b] < min) {
-                        std::cout << "    - min " << b << ": " << min << " -> " << burst[b] << std::endl;
                         min = burst[b];
+                        // std::cout << "    - min " << b << ": " << min << " -> " << burst[b] << std::endl;
                     }
                 }
 
@@ -163,15 +160,15 @@ void simulate_rr(
                 // so that every queued process burst same amount of time and reach next process arrival
                 if (lining < int(processes.size())) {
                     min = std::min(min, processes[lining].arrival_time - time);
-                    std::cout << "    - burst jump process arrive " << lining << ": " << processes[lining].arrival_time - time << std::endl;
                     min /= queue_v.size();
-                    std::cout << "    - burst min / queue_v.size: " << min << std::endl;
+                    // std::cout << "    - burst jump process arrive " << lining << ": " << processes[lining].arrival_time - time << std::endl;
+                    // std::cout << "    - burst min / queue_v.size: " << min << std::endl;
                 }
 
                 // Make sure min is padded with quantum
                 min -= min % quantum;
-                std::cout << "    - burst min %% quantum: " << min << std::endl;
-                std::cout << "  - burst min: " << min << std::endl;
+                // std::cout << "    - burst min %% quantum: " << min << std::endl;
+                // std::cout << "  - burst min: " << min << std::endl;
 
 
                 // Whether make a burst jump (aka the hardest hint) or regular one-quantum step
@@ -179,8 +176,8 @@ void simulate_rr(
                     // Burst jumping is available, namely every queued process can at least 
                     // burst one quantum amount of time. Otherwise there might be more processes
                     // arriving during less than a quantum of time, which should go regular step.
-                    std::cout << "  - burst jump " << std::endl;
                     burst_jump = true;
+                    // std::cout << "  - burst jump " << std::endl;
 
                     // Record start time and declare new queue
                     int64_t start_time = time;
@@ -196,11 +193,11 @@ void simulate_rr(
                             queue_new.push(b);
                         }
 
-                        std::cout << "      - queue current: " << b << ", burst: " << burst[b] << std::endl;
+                        // std::cout << "      - queue current: " << b << ", burst: " << burst[b] << std::endl;
                     }
                     queue = queue_new;
-                    std::cout << "      - ";
-                    print(queue_new, "queue_new");
+                    // std::cout << "      - ";
+                    // print(queue_new, "queue_new");
 
                     // Assign finish time for processes
                     int index = 0;
@@ -231,7 +228,7 @@ void simulate_rr(
                     }
                 } else {
                     // Regular one-quantum steps
-                    std::cout << "  - regular one-quantum burst" << std::endl;
+                    // std::cout << "  - regular one-quantum burst" << std::endl;
                     if (burst[current] >= quantum) {
                         burst[current] -= quantum;
                         time += quantum;
@@ -255,7 +252,7 @@ void simulate_rr(
                         burst[lining] = processes[lining].burst;
                         start[lining] = false;
                         finish[lining] = false;
-                        std::cout << "  - queue 2 new process " << lining << ", arrival " << processes[lining].arrival_time << std::endl;
+                        // std::cout << "  - queue 2 new process " << lining << ", arrival " << processes[lining].arrival_time << std::endl;
                         lining++;
                     }
 
@@ -274,11 +271,11 @@ void simulate_rr(
             }
         }
 
-        std::cout << "time:   " << time << std::endl;
-        print(queue, "queue");
-        print(burst, "burst");
-        std::cout << "lining: " << lining << "/" << processes.size() << std::endl;
-        std::cout << std::endl;
+        // std::cout << "time:   " << time << std::endl;
+        // print(queue, "queue");
+        // print(burst, "burst");
+        // std::cout << "lining: " << lining << "/" << processes.size() << std::endl;
+        // std::cout << std::endl;
 
         // Finished all processes
         if (queue.empty() && int(processes.size()) == lining) {
