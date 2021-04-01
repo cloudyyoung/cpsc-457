@@ -34,14 +34,14 @@ public:
     }
 
     std::string get(int t) {
-        if (t < 0 || t > dict1.size()) {
+        if (t < 0 || t > int(dict1.size())) {
             return "";
         }
         return dict1[t];
     }
 
-    int size() {
-        return counter;
+    size_t size() {
+        return size_t(counter);
     }
 
 } dictionary;
@@ -71,10 +71,9 @@ Result detect_deadlock(const std::vector<std::string>& edges)
 {
 
     Result result;
-    size_t graph_size = 0;
 
     // Handle edges
-    for (int t = 0; t < edges.size(); t++) {
+    for (int t = 0; t < int(edges.size()); t++) {
         std::string edge = edges[t];
         std::vector<std::string> tokens = split(edge);
         int t1 = dictionary.get("[P]" + tokens[0]); // [P]a, use prefix to differentiate process / resource
@@ -96,12 +95,9 @@ Result detect_deadlock(const std::vector<std::string>& edges)
         }
 
         // Sizing to number of nodes
-        int size = dictionary.size();
-        if (graph_size < size) {
-            graph_size *= 2;
-            graph.outs.resize(graph_size);
-            graph.adjacency.resize(graph_size);
-        }
+        size_t size = dictionary.size();
+        graph.outs.resize(size);
+        graph.adjacency.resize(size);
 
 
         // Record out and incoming
@@ -111,7 +107,7 @@ Result detect_deadlock(const std::vector<std::string>& edges)
         // All nodes with 0 outdegree
         std::vector<int> outs = graph.outs;
         std::vector<int> zeros;
-        for (int t = 0; t < graph.outs.size(); t++) {
+        for (int t = 0; t < int(graph.outs.size()); t++) {
             if (graph.outs[t] == 0) {
                 zeros.push_back(t);
             }
@@ -131,7 +127,7 @@ Result detect_deadlock(const std::vector<std::string>& edges)
         }
 
         // Find cycle
-        for (int t = 0; t < outs.size(); t++) {
+        for (int t = 0; t < int(outs.size()); t++) {
             if (outs[t] != 0) {
                 std::string node = dictionary.get(t);
                 if (node.find("[P]") != std::string::npos) {
