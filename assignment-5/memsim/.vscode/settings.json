@@ -1,0 +1,13 @@
+{
+  "python.pythonPath": "/bin/python3",
+
+  "[python]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4  
+  },
+  "[cpp]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "editor.tabSize": 2
+}
