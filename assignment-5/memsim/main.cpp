@@ -18,9 +18,9 @@ struct Timer {
   Timer();
   ~Timer();
 
-  private:
+private:
   struct Pimpl;
-  Pimpl * pimpl_;
+  Pimpl* pimpl_;
 };
 
 struct Timer::Pimpl {
@@ -35,9 +35,9 @@ Timer::~Timer() { delete pimpl_; }
 double Timer::elapsed(bool reset_p)
 {
   double result = 1e-6
-      * std::chrono::duration_cast<std::chrono::microseconds>(
-            std::chrono::steady_clock::now() - pimpl_->start)
-            .count();
+    * std::chrono::duration_cast<std::chrono::microseconds>(
+      std::chrono::steady_clock::now() - pimpl_->start)
+    .count();
   if (reset_p) reset();
   return result;
 }
@@ -47,7 +47,7 @@ typedef std::vector<std::string> vs_t;
 
 // split string p_line into a vector of strings (words)
 // the delimiters are 1 or more whitespaces
-static vs_t split(const std::string & p_line)
+static vs_t split(const std::string& p_line)
 {
   auto line = p_line + " ";
   vs_t res;
@@ -68,9 +68,9 @@ static vs_t split(const std::string & p_line)
 
 // convert string to long
 // if successful, success = True, otherwise success = False
-static long str2long(const std::string & s, bool & success)
+static long str2long(const std::string& s, bool& success)
 {
-  char * end = 0;
+  char* end = 0;
   errno = 0;
   long res = strtol(s.c_str(), &end, 10);
   if (*end != 0 || errno != 0) {
@@ -93,18 +93,18 @@ static std::string stdin_readline()
   return result;
 }
 
-static std::string join(const vs_t & toks, const std::string & sep = " ")
+static std::string join(const vs_t& toks, const std::string& sep = " ")
 {
   std::string res;
   bool first = true;
-  for (auto & t : toks) {
+  for (auto& t : toks) {
     res += (first ? "" : sep) + t;
     first = false;
   }
   return res;
 }
 
-static void parse_request(long line_no, vs_t & toks, Request & request)
+static void parse_request(long line_no, vs_t& toks, Request& request)
 {
   auto line_err = [&] {
     printf("Error on line %ld: \"%s\"\n", line_no, join(toks).c_str());
@@ -116,34 +116,34 @@ static void parse_request(long line_no, vs_t & toks, Request & request)
   // convert first word into number
   bool ok;
   long tag = str2long(toks[0], ok);
-  if (! ok) line_err();
+  if (!ok) line_err();
 
   if (tag < 0) {
-    if (tag < -1000 || toks.size() != 1) line_err();
+    if (tag < -10000000 || toks.size() != 1) line_err();
     request = { int(tag), 0 };
     return;
   }
-  if (tag > 1000 || toks.size() != 2) line_err();
+  if (tag > 10000000 || toks.size() != 2) line_err();
   long size = str2long(toks[1].c_str(), ok);
-  if (! ok || size < 1 || size > 10000000) line_err();
+  if (!ok || size < 1 || size > 10000000) line_err();
   request = { int(tag), int(size) };
 }
 
-static void usage(const std::string & pname)
+static void usage(const std::string& pname)
 {
   printf("Usage: %s <page-size>\n", pname.c_str());
   printf("   where page-size is int in range [1..1,000,000]\n");
   exit(-1);
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char** argv)
 {
   // parse command line arguments
   // ------------------------------
   if (argc != 2) usage(argv[0]);
   bool ok;
   long page_size = str2long(argv[1], ok);
-  if (! ok || page_size < 1 || page_size > 1000000) {
+  if (!ok || page_size < 1 || page_size > 1000000) {
     printf("Bad page size '%s'.\n", argv[1]);
     usage(argv[0]);
   }
