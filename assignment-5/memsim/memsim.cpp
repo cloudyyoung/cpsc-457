@@ -94,8 +94,8 @@ struct Simulator {
       Partition head = Partition(0, new_pages * this->page_size);
       this->page_requested += new_pages;
 
-      std::cout << "  HEAD new pages: " << new_pages << ", head size: " << head.size << std::endl;
-      std::cout << "  - page request += " << new_pages << ", total requested: " << this->page_requested << std::endl;
+      // std::cout << "  HEAD new pages: " << new_pages << ", head size: " << head.size << std::endl;
+      // std::cout << "  - page request += " << new_pages << ", total requested: " << this->page_requested << std::endl;
 
       this->partitions.push_back(head);
       this->unoccupied.insert(this->partitions.begin());
@@ -114,12 +114,12 @@ struct Simulator {
         this->unoccupied.erase(max_unoccupied_iterator);
       }
 
-      std::cout << "  has suitable? " << std::boolalpha << has_suitable << std::endl;
+      // std::cout << "  has suitable? " << std::boolalpha << has_suitable << std::endl;
     }
 
     // Split partiton OR expand by page
     if (!has_suitable) {
-      std::cout << "STEP: EXPAND PAGE " << std::endl;
+      // std::cout << "STEP: EXPAND PAGE " << std::endl;
 
       // No suitable unoccupied partition, expand partition at the end
       PartitionIterator last = std::prev(this->partitions.end());
@@ -132,7 +132,7 @@ struct Simulator {
         int64_t new_pages = this->n_page_request(size - last->size);
         total_last_size += new_pages * this->page_size;
         this->page_requested += new_pages;
-        std::cout << "  - page request += " << new_pages << ", total requested: " << this->page_requested << std::endl;
+        // std::cout << "  - page request += " << new_pages << ", total requested: " << this->page_requested << std::endl;
 
 
         // Occupy last partition
@@ -141,7 +141,7 @@ struct Simulator {
         last->size = size;
         this->tag_partitions[tag].push_back(last);
         total_last_size -= size;
-        std::cout << "  - last - start: " << last->start << ", size: " << last->size << ", tag: " << last->tag << std::endl;
+        // std::cout << "  - last - start: " << last->start << ", size: " << last->size << ", tag: " << last->tag << std::endl;
 
 
         // Append Leftover size if there is any
@@ -160,15 +160,15 @@ struct Simulator {
         int64_t total_last_size = new_pages * this->page_size;
         int64_t leftover_size = total_last_size - size;
 
-        std::cout << "  - page request += " << new_pages << ", total requested: " << this->page_requested << std::endl;
+        // std::cout << "  - page request += " << new_pages << ", total requested: " << this->page_requested << std::endl;
 
         // New partition
         int64_t new_last_start = last->start + last->size;
         Partition new_last = Partition(new_last_start, size, tag);
         this->partitions.push_back(new_last);
         this->tag_partitions[tag].push_back(std::prev(this->partitions.end()));
-        std::cout << "  - last.start: " << last->start << std::endl;
-        std::cout << "  - last_start: " << new_last_start << std::endl;
+        // std::cout << "  - last.start: " << last->start << std::endl;
+        // std::cout << "  - last_start: " << new_last_start << std::endl;
 
         // Append leftover partition
         if (leftover_size > 0) {
@@ -182,26 +182,26 @@ struct Simulator {
 
     } else { // Split partition
 
-      std::cout << "STEP: SPLIT PARTITION " << std::endl;
-      std::cout << "  - SUITABLE start: " << suitable->start << ", size: " << suitable->size << std::endl;
+      // std::cout << "STEP: SPLIT PARTITION " << std::endl;
+      // std::cout << "  - SUITABLE start: " << suitable->start << ", size: " << suitable->size << std::endl;
 
       int64_t total_suitable_size = suitable->size;
       int64_t leftover_size = total_suitable_size - size;
 
-      std::cout << "  - total suitable size: " << total_suitable_size << ", leftover size: " << leftover_size << std::endl;
+      // std::cout << "  - total suitable size: " << total_suitable_size << ", leftover size: " << leftover_size << std::endl;
 
 
       // Occupy partition
       suitable->tag = tag;
       suitable->size = size;
       this->tag_partitions[tag].push_back(suitable);
-      std::cout << "  - partition " << this->partitions.size() << std::endl;
-      std::cout << "  - tag partition " << this->tag_partitions[tag].size() << std::endl;
+      // std::cout << "  - partition " << this->partitions.size() << std::endl;
+      // std::cout << "  - tag partition " << this->tag_partitions[tag].size() << std::endl;
 
 
       // Append leftover partition
       if (leftover_size > 0) {
-        std::cout << "  step: add leftover" << std::endl;
+        // std::cout << "  step: add leftover" << std::endl;
 
         int64_t leftover_start = suitable->start + size;
         Partition leftover = Partition(leftover_start, leftover_size);
@@ -222,7 +222,7 @@ struct Simulator {
     std::list<PartitionIterator> partitions = this->tag_partitions[tag];
 
     for (PartitionIterator partition : partitions) {
-      std::cout << "  - tag partitions: " << partition->start << std::endl;
+      // std::cout << "  - tag partitions: " << partition->start << std::endl;
 
       partition->tag = 0;
 
@@ -291,27 +291,27 @@ struct Simulator {
 
     // make sure that none of the partition sizes or addresses are < 1
 
-    std::cout << "=======================" << std::endl;
-    std::cout << "partition size " << this->partitions.size() << std::endl;
+    // std::cout << "=======================" << std::endl;
+    // std::cout << "partition size " << this->partitions.size() << std::endl;
     for (Partition each : this->partitions) {
-      std::cout << "  partition [ start: " << each.start << ", size: " << each.size << ", tag: " << each.tag << " ]" << std::endl;
+      // std::cout << "  partition [ start: " << each.start << ", size: " << each.size << ", tag: " << each.tag << " ]" << std::endl;
     }
 
-    std::cout << std::endl;
+    // std::cout << std::endl;
 
-    std::cout << "unoccupied size " << this->unoccupied.size() << std::endl;
+    // std::cout << "unoccupied size " << this->unoccupied.size() << std::endl;
     for (PartitionIterator each : this->unoccupied) {
-      std::cout << "  unoccupied [ start: " << each->start << ", size: " << each->size << " ]" << std::endl;
+      // std::cout << "  unoccupied [ start: " << each->start << ", size: " << each->size << " ]" << std::endl;
     }
 
-    std::cout << std::endl;
+    // std::cout << std::endl;
 
-    std::cout << "page request " << this->page_requested << std::endl;
-    std::cout << "=======================" << std::endl;
+    // std::cout << "page request " << this->page_requested << std::endl;
+    // std::cout << "=======================" << std::endl;
 
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
+    // std::cout << std::endl;
+    // std::cout << std::endl;
+    // std::cout << std::endl;
 
   }
 };
@@ -327,17 +327,17 @@ struct Simulator {
 MemSimResult mem_sim(int64_t page_size, const std::vector<Request>& requests)
 {
   Simulator sim(page_size);
-  std::cout << "page size: " << page_size << std::endl << std::endl;
+  // std::cout << "page size: " << page_size << std::endl << std::endl;
 
   for (const auto& req : requests) {
-    std::cout << "request: " << req.tag << ", size: " << req.size << std::endl;
+    // std::cout << "request: " << req.tag << ", size: " << req.size << std::endl;
 
     if (req.tag < 0) {
       sim.deallocate(-req.tag);
     } else {
       sim.allocate(req.tag, req.size);
     }
-    sim.check_consistency();
+    // sim.check_consistency();
   }
   return sim.getStats();
 }
