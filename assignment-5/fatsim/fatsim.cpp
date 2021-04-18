@@ -2,7 +2,6 @@
 
 #include "fatsim.h"
 #include <cstdio>
-#include <stack>
 #include <iostream>
 #include <map>
 #include <algorithm>
@@ -10,10 +9,10 @@
 // reimplement this function
 std::vector<long> fat_check(const std::vector<long>& fat)
 {
-  std::vector<bool> visited = std::vector<bool>(fat.size());
-  std::vector<bool> cycle = std::vector<bool>(fat.size());
-  std::vector<long> destination = std::vector<long>(fat.size());
-  std::vector<long> depth = std::vector<long>(fat.size());
+  std::map<long, bool> visited;
+  std::map<long, bool> cycle;
+  std::map<long, long> destination;
+  std::map<long, long> depth;
   std::map<long, long> destination_max;
 
   for (long int each = 0; each < long(fat.size()); each++) {
