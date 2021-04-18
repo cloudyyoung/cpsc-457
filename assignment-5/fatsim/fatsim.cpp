@@ -24,7 +24,7 @@ std::vector<long> fat_check(const std::vector<long>& fat)
 
     // Record searched nodes
     std::vector<long> search;
-    std::vector<bool> search_visited = std::vector<bool>(fat.size());
+    std::map<long, bool> search_visited;
     long at = each;
     long to_destination = -1;
     long to = 0;
