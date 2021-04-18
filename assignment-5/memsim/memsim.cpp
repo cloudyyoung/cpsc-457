@@ -208,7 +208,7 @@ struct Simulator {
       }
 
       // If has successor
-      if (partition != this->partitions.end()) {
+      if (partition != std::prev(this->partitions.end())) {
         PartitionIterator successor = std::next(partition);
 
         // And and successor is unoccupied
