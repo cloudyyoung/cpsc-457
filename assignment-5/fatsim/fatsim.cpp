@@ -14,7 +14,7 @@ std::vector<long> fat_check(const std::vector<long>& fat)
   std::vector<bool> cycle = std::vector<bool>(fat.size());
   std::vector<long> destination = std::vector<long>(fat.size());
   std::vector<long> depth = std::vector<long>(fat.size());
-  std::unordered_map<long, long> destination_max;
+  std::map<long, long> destination_max;
 
   for (long int each = 0; each < long(fat.size()); each++) {
 
@@ -24,7 +24,7 @@ std::vector<long> fat_check(const std::vector<long>& fat)
 
     // Record searched nodes
     std::vector<long> search;
-    std::unordered_map<long, bool> search_visited;
+    std::map<long, bool> search_visited;
     long at = each;
     long to_destination = -1;
     long to = 0;
